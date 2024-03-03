@@ -13,8 +13,8 @@ const resetGame = () => {
     count = 0;
     enableBoxes();
     msgContainer.classList.add("hide");
-    msg.classList.remove("Xcolor");
-    msg.classList.remove("Ocolor");
+    msg.style.color = "white";
+    msg.innerText = "";
 };
 
 const disableBoxes = () => {
@@ -28,20 +28,15 @@ const enableBoxes = () => {
         box.innerText = "";
         box.classList.remove("Ocolor");
         box.classList.remove("Xcolor");
-        msg.style.color = "white";
     }
 };
 
 const showWinner = (winner) => {
-    if(winner == "draw"){
-        msg.style.color = "white";
-        msg.innerText = "The Game was Drawed!";
-    }
-    if(winner == "X"){
+    if(winner === "X"){
         msg.style.color = "red";
         msg.innerText = `Congratulations! The Winner is Player: ${winner}`;
     }
-    else if(winner == "O"){
+    else if(winner === "O"){
         msg.style.color = "blue";
         msg.innerText = `Congratulations! The Winner is Player: ${winner}`;
     }
@@ -49,7 +44,13 @@ const showWinner = (winner) => {
     disableBoxes();
 };
 
-const checkWinner = (count) => {
+const gameDraw = () => {
+    msg.innerText = `Game was a Draw.`;
+    msgContainer.classList.remove("hide");
+    disableBoxes();
+};
+
+const checkWinner = () => {
     for(let pattern of winPatterns){
         let pos1Val = boxes[pattern[0]].innerText;
         let pos2Val = boxes[pattern[1]].innerText;
@@ -57,10 +58,8 @@ const checkWinner = (count) => {
 
         if(pos1Val != "" && pos2Val != "" && pos3Val != ""){
             if(pos1Val === pos2Val && pos2Val === pos3Val){
-                setTimeout(() => {showWinner(pos1Val)}, 250);
-            }
-            else if(count >= 9){
-                setTimeout(() => {showWinner("draw")}, 250);
+                setTimeout(() => {showWinner(pos1Val)}, 500);
+                return true;
             }
         }        
     }
@@ -78,9 +77,13 @@ boxes.forEach((box) => {
             box.classList.add("Xcolor");
             turnO = true;
         }
-        count++;
         box.disabled = true;
-        checkWinner(count);
+        count++;
+
+        let isWinner = checkWinner();
+        if(count === 9 && !isWinner){
+            setTimeout(() => {gameDraw()}, 500);
+        }
     });
 });
 
